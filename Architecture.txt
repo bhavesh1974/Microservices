@@ -1,0 +1,69 @@
+Architecture:----------
+GatewayService 
+	- It will expose to outside world and will recieve all requests. It will find endpoint from "Service Registry" to forward request to other internal services. It also generates unique request id before calling other service. All services will use this request id to log all the details.
+AuthService 
+	- It will serve APIs for Authentication. It has only "getToken" API for now but there can be more APIs related to authentication. 
+MemberService 
+	- It will serve APIs for Members. It has following APIs.
+		GET /members -- list the family members
+		GET /members/{id} -- get a single family member
+		POST /members -- add a family member
+		PUT /members/{id} -- updates a family member
+		DELETE /members/{id} -- delete a family member
+GiftService 
+	- It will serve APIs for Gifts. It has following APIs.
+		GET /gifts/{giftYear} -- list of gifts by Gift Year
+		GET /gifts/{memberId}/{giftYear} -- get a single member/gift
+		POST /gifts -- add a gift (memberId, recipientMemberId, giftYear)
+		PUT /gifts/{memberId}/{giftYear} -- updates a family member
+		DELETE /gifts/{memberId}/{giftYear} -- delete a family member
+		POST /gifts/shuffle/{giftYear} -- It is not coded but psudeo code is written in the code to explain how it could be done. 
+ConfigService 
+	- It is not yet coded. It will provide APIs to update ServiceRegistry. 
+	  E.g. 
+	     addService, updateService, deleteService (All of these service should call "refreshServiceRegistry" to all other microservices so each microservice can get latest information of Services)
+LogService
+    - It is not yet coded. It can be used to writ log through service. All other services can call this service to write log. It can give centralized log. It can impact performance as this service will be hit number of times. 
+
+	
+Key Points:-----------	
+Security: 
+	AuthService will provide APIs to authenticate user/password and return the token. It is required to send generated token for subsequence APIs. GatewayService will again call AuthService to verify token. (** Right now GatewayService is verifying token)
+	It is important to set firewall/port access for individual services so only GatewayService can communicate with other services. 
+Logging: 
+	There can be two options. 
+		#1: Each service writes its own Log and then other system/tool can consolidate these logs to central place. 
+		#2: There can be central LogService and all requests calls API from this service to write log. 
+	GatewayService generates unique requestId for each request and then pass same requestId to other services. All services will write log along with this requetsId.
+ServiceRepository/Registry: 
+	ConfigService can be used to manage service repository. It is important to update service repository to all services. E.g. GatewaySevice needs to know endpoint of each service. It can be handled through database but it will impact the performance. It can be handled through "config file" in each service but again this should be refreshed whenever endpoint is changed or new service is added. 
+Scalability:
+	All these services can be deployed with LoadBalancer. 
+	    End User -> GatewayService Load Balancer -> GatewayService Multiple Servers -> XXXService LoadBalancer -> XXXService Multiple Servers
+	     
+
+	
+Framework:------------
+It is using Model/View(Response)/Controller design pattern to handle all requests. 
+It is using DAO design pattern for database activity.
+
+MongoDB Collections:---------------
+members - id, name
+giftexchanges - memberId, recepientMemberID, giftYear
+
+Model:---------------
+Member
+Gift
+
+Http Status Code:----
+200 - Success
+404 - Not Found
+500 - Service Error
+
+Remark:---------------
+** We could use "Generic" for DAO class, which can be used to write code for standard crud operation for different tables/collections.
+** It has hard coded "ServiceRegistry" config file with each project. This can be handled differently. Every service should get Service Repository by calling ConfigService API and then store it to the file. ConfigService should have APIs to update ServiceRegistery. ConfigService should call "refreshServiceRegistery" API to each microservice to refresh the list of ServiceRegistery.
+** It does not have validation in the code. It is very important to validate each request parameter and sanitize it before processing further. 
+** Please use "userName": "Bhavesh", "password": "12345678" to get token from /auth/getToken API. You need to use geneated token to call other services. 
+
+
