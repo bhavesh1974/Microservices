@@ -5,7 +5,6 @@ const expect = require("chai").expect;
 
 chai.use(require("chai-http"));
 
-const app = require("../GatewayService/app"); // GatewayService - This server should not be running as this unit test will start the server on same port
 let token = "";
 
 describe("Microservice APIs", function() {
@@ -15,7 +14,7 @@ describe("Microservice APIs", function() {
   // GET  /auth/getToken
   it("Get Token", function() {
     return chai
-      .request(app)
+      .request("http://localhost:3000")
       .post("/auth/getToken")
       .send({
         userName: "bhavesh",
@@ -32,7 +31,7 @@ describe("Microservice APIs", function() {
   // POST /members
   it("Add Member", function() {
     return chai
-      .request(app)
+      .request("http://localhost:3000")
       .post("/members")
       .set({ Authorization: "Bearer " + token })
       .send({
@@ -51,7 +50,7 @@ describe("Microservice APIs", function() {
   // GET /members/{id}
   it("Get Member", function() {
     return chai
-      .request(app)
+      .request("http://localhost:3000")
       .get("/members/MemberTest")
       .set({ Authorization: "Bearer " + token })
       .then(function(res) {
@@ -66,7 +65,7 @@ describe("Microservice APIs", function() {
   // PUT /members/{id}
   it("Update Member", function() {
     return chai
-      .request(app)
+      .request("http://localhost:3000")
       .put("/members/MemberTest")
       .set({ Authorization: "Bearer " + token })
       .send({
@@ -83,7 +82,7 @@ describe("Microservice APIs", function() {
   // DELETE /members/{id}
   it("Update Member", function() {
     return chai
-      .request(app)
+      .request("http://localhost:3000")
       .delete("/members/MemberTest")
       .set({ Authorization: "Bearer " + token })
       .then(function(res) {
