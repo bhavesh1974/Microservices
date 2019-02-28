@@ -129,3 +129,5 @@ server.listen(config.server.port, function(error) {
       moment().format("DD-MM-YYYY hh:mm:ss:SSS A")
   );
 });
+
+module.exports = app;
