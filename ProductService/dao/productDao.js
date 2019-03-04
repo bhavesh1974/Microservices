@@ -1,5 +1,5 @@
-const ModelSchema = require("../model/memberSchema");
-const Model = require("../model/member");
+const ModelSchema = require("../model/productSchema");
+const Model = require("../model/product");
 const BaseDao = require("../shared/dao/baseDao");
 
 module.exports = class ProductDao extends BaseDao {
@@ -9,7 +9,7 @@ module.exports = class ProductDao extends BaseDao {
 
   mapDataToModel(data) {
     if (!data) return null;
-    const model = new Model(data._id, data.name);
+    const model = new Model(data._id, data.name, data.category);
     return model;
   }
 
@@ -22,7 +22,8 @@ module.exports = class ProductDao extends BaseDao {
 
   buildAddModel(model) {
     var newModel = ModelSchema({
-      name: model.name
+      name: model.name,
+      category: model.category
     });
     return newModel;
   }
@@ -30,7 +31,8 @@ module.exports = class ProductDao extends BaseDao {
   buildUpdateModel(model) {
     const criteria = { _id: model.id };
     const updateModel = {
-      name: model.name
+      name: model.name,
+      category: model.category
     };
     return { criteria: criteria, model: updateModel };
   }

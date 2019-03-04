@@ -3,7 +3,8 @@ module.exports = {
   repository: {
     authService: "http://localhost:3001",
     membersService: "http://localhost:3002",
-    giftsService: "http://localhost:3003",
-    logService: "http://localhost:3004"
+    productsService: "http://localhost:3003",
+    ordersService: "http://localhost:3004",
+    logService: "http://localhost:3005"
   }
 };

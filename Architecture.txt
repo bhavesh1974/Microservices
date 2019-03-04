@@ -1,23 +1,30 @@
-Architecture:----------
+Architecture:
+Services:----------------
 GatewayService 
-	- It will expose to outside world and will recieve all requests. It will find endpoint from "Service Registry" to forward request to other internal services. It also generates unique request id before calling other service. All services will use this request id to log all the details.
+	- It will expose to outside world and will receive all requests. It will find endpoint from "Service Registry" to forward request to other internal services. It also generates unique request id before calling other service. All services will use this request id to log all the details.
 AuthService 
 	- It will serve APIs for Authentication. It has only "getToken" API for now but there can be more APIs related to authentication. 
 MemberService 
 	- It will serve APIs for Members. It has following APIs.
-		GET /members -- list the family members
-		GET /members/{id} -- get a single family member
-		POST /members -- add a family member
-		PUT /members/{id} -- updates a family member
-		DELETE /members/{id} -- delete a family member
-GiftService 
-	- It will serve APIs for Gifts. It has following APIs.
-		GET /gifts/{giftYear} -- list of gifts by Gift Year
-		GET /gifts/{memberId}/{giftYear} -- get a single member/gift
-		POST /gifts -- add a gift (memberId, recipientMemberId, giftYear)
-		PUT /gifts/{memberId}/{giftYear} -- updates a family member
-		DELETE /gifts/{memberId}/{giftYear} -- delete a family member
-		POST /gifts/shuffle/{giftYear} -- It is not coded but psudeo code is written in the code to explain how it could be done. 
+		GET /members -- list of all members
+		GET /members/{id} -- get a single member
+		POST /members -- add a member
+		PUT /members/{id} -- update a member
+		DELETE /members/{id} -- delete a member
+ProductService 
+	- It will serve APIs for Products. It has following APIs.
+		GET /products -- list all the products
+		GET /products/{id} -- get a single product
+		POST /products -- add a product
+		PUT /products/{id} -- updates a product
+		DELETE /products/{id} -- delete a product
+OrderService 
+	- It will serve APIs for Orders. It has following APIs.
+		GET /orders -- list all the orders
+		GET /orders/{id} -- get a single order
+		POST /orders -- add an order
+		PUT /orders/{id} -- updates an order
+		DELETE /orders/{id} -- delete an order
 ConfigService 
 	- It is not yet coded. It will provide APIs to update ServiceRegistry. 
 	  E.g. 
@@ -28,8 +35,8 @@ LogService
 	
 Key Points:-----------	
 Security: 
-	AuthService will provide APIs to authenticate user/password and return the token. It is required to send generated token for subsequence APIs. GatewayService will again call AuthService to verify token. (** Right now GatewayService is verifying token)
-	It is important to set firewall/port access for individual services so only GatewayService can communicate with other services. 
+	AuthService will provide APIs to authenticate user/password and return the token. It is required to send generated token for subsequence APIs. GatewayService will again call AuthService to verify token. (** Right now GatewayService is verifying token. **)
+	It is important to set firewall/port access for individual services so only GatewayService and internal services can communicate with each other.
 Logging: 
 	There can be two options. 
 		#1: Each service writes its own Log and then other system/tool can consolidate these logs to central place. 
@@ -40,30 +47,24 @@ ServiceRepository/Registry:
 Scalability:
 	All these services can be deployed with LoadBalancer. 
 	    End User -> GatewayService Load Balancer -> GatewayService Multiple Servers -> XXXService LoadBalancer -> XXXService Multiple Servers
-	     
 
-	
+Technologies:------------
+node.js, express.js, mongodb 
+
 Framework:------------
 It is using Model/View(Response)/Controller design pattern to handle all requests. 
 It is using DAO design pattern for database activity.
 
 MongoDB Collections:---------------
-members - id, name
-giftexchanges - memberId, recepientMemberID, giftYear
-
-Model:---------------
-Member
-Gift
+members - _id, name
+products - _id, name, category
+orders - _id, productId, memberId, qty, rate
 
 Http Status Code:----
 200 - Success
-404 - Not Found
-500 - Service Error
+4XX - Client Error
+5XX - Server Error
 
-Remark:---------------
-** We could use "Generic" for DAO class, which can be used to write code for standard crud operation for different tables/collections.
-** It has hard coded "ServiceRegistry" config file with each project. This can be handled differently. Every service should get Service Repository by calling ConfigService API and then store it to the file. ConfigService should have APIs to update ServiceRegistery. ConfigService should call "refreshServiceRegistery" API to each microservice to refresh the list of ServiceRegistery.
-** It does not have validation in the code. It is very important to validate each request parameter and sanitize it before processing further. 
-** Please use "userName": "Bhavesh", "password": "12345678" to get token from /auth/getToken API. You need to use geneated token to call other services. 
+
 
 

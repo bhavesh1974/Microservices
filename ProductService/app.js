@@ -11,8 +11,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config();
 const config = require("./config/config");
-const MemberController = require("./controller/memberController");
-memberController = new MemberController();
+const ProductController = require("./controller/productController");
+productController = new ProductController();
 
 logger = require("./shared/services/logger");
 
@@ -32,6 +32,7 @@ app.use(helmet());
 
 app.use((req, res, next) => {
   //Set request id to logger options
+  console.log(logger.transports);
   logger.transports.dailyRotateFile.options.requestId = req.body.requestId;
 
   logger.info("Request started.");
@@ -42,12 +43,12 @@ app.use((req, res, next) => {
 });
 
 //Route API to controller
-app.get("/members/:id", memberController.get());
-app.get("/members/searchByName/:name", memberController.searchByName());
-app.get("/members", memberController.getAll());
-app.post("/members", memberController.add());
-app.put("/members/:id", memberController.update());
-app.delete("/members/:id", memberController.delete());
+app.get("/products/:id", productController.get());
+app.get("/products/searchByName/:name", productController.searchByName());
+app.get("/products", productController.getAll());
+app.post("/products", productController.add());
+app.put("/products/:id", productController.update());
+app.delete("/products/:id", productController.delete());
 
 app.use((req, res, next) => {
   const error = new Error("Not Found");
@@ -90,7 +91,7 @@ mongoose
     //Start listening request on port
     server.listen(config.server.port, function(error) {
       logger.info(
-        "Started MemberService on " +
+        "Started ProductService on " +
           config.server.port +
           " at " +
           moment().format("DD-MM-YYYY hh:mm:ss:SSS A")

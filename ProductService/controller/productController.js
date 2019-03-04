@@ -1,8 +1,8 @@
-const Dao = require("../dao/memberDao");
-const Model = require("../model/member");
+const Dao = require("../dao/productDao");
+const Model = require("../model/product");
 const BaseController = require("../shared/controller/baseController");
 
-module.exports = class MemberController extends BaseController {
+module.exports = class ProductController extends BaseController {
   constructor() {
     super(new Dao());
   }
@@ -25,9 +25,9 @@ module.exports = class MemberController extends BaseController {
   }
 
   buildAddModel(req) {
-    return new Model(null, req.body.name);
+    return new Model(null, req.body.name, req.body.category);
   }
   buildUpdateModel(req) {
-    return new Model(req.params.id, req.body.name);
+    return new Model(req.params.id, req.body.name, req.body.category);
   }
 };

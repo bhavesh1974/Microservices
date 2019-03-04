@@ -30,9 +30,12 @@ app.use(cors());
 app.use(helmet());
 
 app.use((req, res, next) => {
-  logger.info("Request: " + req.body.requestId + " started.");
+  //Set request id to logger options
+  logger.transports.dailyRotateFile.options.requestId = req.body.requestId;
+
+  logger.info("Request started.");
   res.on("finish", () => {
-    logger.info("Request: " + req.body.requestId + " completed.");
+    logger.info("Request completed.");
   });
   next();
 });

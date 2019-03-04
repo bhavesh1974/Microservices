@@ -11,8 +11,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config();
 const config = require("./config/config");
-const MemberController = require("./controller/memberController");
-memberController = new MemberController();
+const OrderController = require("./controller/orderController");
+orderController = new OrderController();
 
 logger = require("./shared/services/logger");
 
@@ -42,12 +42,11 @@ app.use((req, res, next) => {
 });
 
 //Route API to controller
-app.get("/members/:id", memberController.get());
-app.get("/members/searchByName/:name", memberController.searchByName());
-app.get("/members", memberController.getAll());
-app.post("/members", memberController.add());
-app.put("/members/:id", memberController.update());
-app.delete("/members/:id", memberController.delete());
+app.get("/orders/:id", orderController.get());
+app.get("/orders", orderController.getAll());
+app.post("/orders", orderController.add());
+app.put("/orders/:id", orderController.update());
+app.delete("/orders/:id", orderController.delete());
 
 app.use((req, res, next) => {
   const error = new Error("Not Found");
@@ -59,7 +58,6 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  logger.error("System Error:", error);
   const statusCode = error.status || 500;
   res.status(statusCode).json({
     code: statusCode,
@@ -90,7 +88,7 @@ mongoose
     //Start listening request on port
     server.listen(config.server.port, function(error) {
       logger.info(
-        "Started MemberService on " +
+        "Started OrderService on " +
           config.server.port +
           " at " +
           moment().format("DD-MM-YYYY hh:mm:ss:SSS A")

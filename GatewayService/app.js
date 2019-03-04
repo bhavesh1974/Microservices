@@ -87,7 +87,11 @@ app.use("*", util.verifyAuthentication, (req, res, next) => {
         res.status(response.status).json(response.data);
       })
       .catch(error => {
-        res.status(503).json({ status: "503", message: "Service unavailable" });
+        if (error.response) {
+          res.status(error.response.status).json(error.response.data);
+        } else {
+          res.status(503).json("Service unavailable");
+        }
       });
   } else {
     const error = new Error("Not Found");

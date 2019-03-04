@@ -12,7 +12,9 @@ var logDirectory = path.join(__dirname, "../../logs");
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
 
 var logFormatter = function(options) {
+  requestId = options.requestId ? "[" + options.requestId + "]" : "";
   return (
+    requestId +
     "[" +
     datetime() +
     "] - [" +
