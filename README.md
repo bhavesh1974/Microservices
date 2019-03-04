@@ -1,4 +1,3 @@
-# Microservices
 Architecture:
 Services:----------------
 GatewayService 
@@ -36,7 +35,7 @@ LogService
 	
 Key Points:-----------	
 Security: 
-	AuthService will provide APIs to authenticate user/password and return the token. It is required to send generated token for subsequence APIs. GatewayService will again call AuthService to verify token. (** Right now GatewayService is verifying token. **)
+	AuthService will provide APIs to authenticate user/password and return the token. It is required to send generated token for subsequence APIs. GatewayService will again call AuthService to verify token. (Right now GatewayService is verifying token. )
 	It is important to set firewall/port access for individual services so only GatewayService and internal services can communicate with each other.
 Logging: 
 	There can be two options. 
@@ -65,3 +64,7 @@ Http Status Code:----
 200 - Success
 4XX - Client Error
 5XX - Server Error
+
+
+
+
