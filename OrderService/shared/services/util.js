@@ -1,4 +1,7 @@
 const serviceRegistry = require("../../config/serviceregistry");
+const request = require("./request");
+const config = require("../../config/config");
+
 module.exports = {
   parseServiceFromURL: url => {
     //parse service name from URL
@@ -19,10 +22,14 @@ module.exports = {
       service = service.substring(0, subPathSeperator);
     }
     service = service + "Service";
-    if (serviceRegistry.repository.hasOwnProperty(service)) {
-      return serviceRegistry.repository[service];
-    } else {
-      return undefined;
-    }
+
+    request
+      .request(config.serviceRegistry + "/" + service, "GET", {}, req.headers)
+      .then(response => {
+        return response.data.data.endpoint;
+      })
+      .catch(error => {
+        return undefined;
+      });
   }
 };
