@@ -1,0 +1,26 @@
+{
+  "name": "registryservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --exit"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "helmet": "^3.15.1",
+    "mocha": "^6.0.2",
+    "moment": "^2.24.0",
+    "mongoose": "^5.4.16",
+    "morgan": "^1.9.1",
+    "winston": "^2.4.0",
+    "winston-daily-rotate-file": "^3.5.1"
+  }
+}

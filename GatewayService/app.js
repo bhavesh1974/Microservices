@@ -45,23 +45,34 @@ app.use((req, res, next) => {
 //special request to get JWT token by passing user/password
 //this token is required to call subsequential services
 app.use("/auth/getToken", (req, res, next) => {
-  const endpoint = serviceRegistry.repository.authService;
-  logger.info(
-    "Request: " +
-      req.body.requestId +
-      " - " +
-      req.originalUrl +
-      " forwarded to " +
-      endpoint
-  );
-
   request
-    .request(endpoint, req)
+    .request(config.serviceRegistry + "/authService", "GET", {}, req.headers)
     .then(response => {
-      res.status(response.status).json(response.data);
+      const endpoint = response.data.data.endpoint;
+      logger.info(
+        "Request: " +
+          req.body.requestId +
+          " - " +
+          req.originalUrl +
+          " forwarded to " +
+          endpoint
+      );
+
+      request
+        .forward(endpoint, req)
+        .then(response => {
+          res.status(response.status).json(response.data);
+        })
+        .catch(error => {
+          res
+            .status(503)
+            .json({ status: "5031", message: "Service unavailable" });
+        });
     })
     .catch(error => {
-      res.status(503).json({ status: "503", message: "Service unavailable" });
+      res
+        .status(500)
+        .send({ code: "5001", message: "Service cannot discovered." });
     });
 });
 
@@ -70,34 +81,36 @@ app.use("*", util.verifyAuthentication, (req, res, next) => {
   //get service name from URL
   const service = util.parseServiceFromURL(req.originalUrl);
   //get endpoint from service registry
-  if (serviceRegistry.repository.hasOwnProperty(service)) {
-    const endpoint = serviceRegistry.repository[service];
-
-    logger.info(
-      "Request: " +
-        req.body.requestId +
-        " - " +
-        req.originalUrl +
-        " forwarded to " +
-        endpoint
-    );
-    request
-      .request(endpoint, req)
-      .then(response => {
-        res.status(response.status).json(response.data);
-      })
-      .catch(error => {
-        if (error.response) {
-          res.status(error.response.status).json(error.response.data);
-        } else {
-          res.status(503).json("Service unavailable");
-        }
-      });
-  } else {
-    const error = new Error("Not Found");
-    error.status = 400;
-    next(error);
-  }
+  request
+    .request(config.serviceRegistry + "/" + service, "GET", {}, req.headers)
+    .then(response => {
+      const endpoint = response.data.data.endpoint;
+      logger.info(
+        "Request: " +
+          req.body.requestId +
+          " - " +
+          req.originalUrl +
+          " forwarded to " +
+          endpoint
+      );
+      request
+        .forward(endpoint, req)
+        .then(response => {
+          res.status(response.status).json(response.data);
+        })
+        .catch(error => {
+          if (error.response) {
+            res.status(error.response.status).json(error.response.data);
+          } else {
+            res.status(503).json("Service unavailable");
+          }
+        });
+    })
+    .catch(error => {
+      res
+        .status(500)
+        .send({ code: "5001", message: "Service cannot discovered." });
+    });
 });
 
 app.use((error, req, res, next) => {
@@ -122,16 +135,23 @@ process.on("uncaughtException", function(error) {
   //mailer.sendEmail(data);
 });
 
-//Create HTTP server
-const server = http.createServer(app);
-//Start listening request on port
-server.listen(config.server.port, function(error) {
-  logger.info(
-    "Started GatewayService on " +
-      config.server.port +
-      " at " +
-      moment().format("DD-MM-YYYY hh:mm:ss:SSS A")
-  );
-});
+request
+  .request(config.serviceRegistry + "/authService", "GET", {}, {})
+  .then(response => {
+    //Create HTTP server
+    const server = http.createServer(app);
+    //Start listening request on port
+    server.listen(config.server.port, function(error) {
+      logger.info(
+        "Started GatewayService on " +
+          config.server.port +
+          " at " +
+          moment().format("DD-MM-YYYY hh:mm:ss:SSS A")
+      );
+    });
+  })
+  .catch(error => {
+    logger.info("Registry service is not running.");
+  });
 
 module.exports = app;
