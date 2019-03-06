@@ -5,91 +5,92 @@ const expect = require("chai").expect;
 
 chai.use(require("chai-http"));
 
-let token = "";
-let id = "";
-
 describe("Microservice APIs", function() {
   before(function() {});
   after(function() {});
 
-  // GET  /auth/getToken
-  it("Get Token", function() {
-    return chai
-      .request("http://localhost:3000")
-      .post("/auth/getToken")
-      .send({
-        userName: "bhavesh",
-        password: "12345678"
-      })
-      .then(function(res) {
-        token = res.body.token;
-        expect(res).to.have.status(200);
-        expect(res).to.be.json;
-        expect(res.body).to.be.an("object");
-      });
-  });
-
   // POST /registry
-  it("Add Registry", function() {
+  it("Add AuthService", function() {
     return chai
-      .request("http://localhost:3000")
+      .request("http://localhost:3006")
       .post("/registry")
-      .set({ Authorization: "Bearer " + token })
       .send({
-        name: "NewService",
-        endpoint: "http://localhost:3999"
+        name: "authService",
+        endpoint: "http://localhost:3001"
       })
       .then(function(res) {
         expect(res).to.have.status(200);
         expect(res).to.be.json;
         expect(res.body).to.be.an("object");
-        id = res.body.id;
         expect(res.body.message).eq("It is successfully added.");
       });
   });
 
-  // GET /registry/{id}
-  it("Get Registry", function() {
+  // POST /registry
+  it("Add MemberService", function() {
     return chai
-      .request("http://localhost:3000")
-      .get("/registry/" + id)
-      .set({ Authorization: "Bearer " + token })
-      .then(function(res) {
-        expect(res).to.have.status(200);
-        expect(res).to.be.json;
-        expect(res.body).to.be.an("object");
-        expect(res.body.data.name).eq("NewService");
-      });
-  });
-
-  // PUT /registry/{id}
-  it("Update Registry", function() {
-    return chai
-      .request("http://localhost:3000")
-      .put("/registry/" + id)
-      .set({ Authorization: "Bearer " + token })
+      .request("http://localhost:3006")
+      .post("/registry")
       .send({
-        name: "NewService-Updated"
+        name: "membersService",
+        endpoint: "http://localhost:3002"
       })
       .then(function(res) {
         expect(res).to.have.status(200);
         expect(res).to.be.json;
         expect(res.body).to.be.an("object");
-        expect(res.body.message).eq("It is successfully updated.");
+        expect(res.body.message).eq("It is successfully added.");
       });
   });
 
-  // DELETE /registry/{id}
-  it("Delete Registry", function() {
+  // POST /registry
+  it("Add ProductService", function() {
     return chai
-      .request("http://localhost:3000")
-      .delete("/registry/" + id)
-      .set({ Authorization: "Bearer " + token })
+      .request("http://localhost:3006")
+      .post("/registry")
+      .send({
+        name: "productsService",
+        endpoint: "http://localhost:3003"
+      })
       .then(function(res) {
         expect(res).to.have.status(200);
         expect(res).to.be.json;
         expect(res.body).to.be.an("object");
-        expect(res.body.message).eq("It is successfully deleted.");
+        expect(res.body.message).eq("It is successfully added.");
+      });
+  });
+
+  // POST /registry
+  it("Add OrderService", function() {
+    return chai
+      .request("http://localhost:3006")
+      .post("/registry")
+      .send({
+        name: "ordersService",
+        endpoint: "http://localhost:3004"
+      })
+      .then(function(res) {
+        expect(res).to.have.status(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.an("object");
+        expect(res.body.message).eq("It is successfully added.");
+      });
+  });
+
+  // POST /registry
+  it("Add RegistryService", function() {
+    return chai
+      .request("http://localhost:3006")
+      .post("/registry")
+      .send({
+        name: "registryService",
+        endpoint: "http://localhost:3006"
+      })
+      .then(function(res) {
+        expect(res).to.have.status(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.an("object");
+        expect(res.body.message).eq("It is successfully added.");
       });
   });
 });

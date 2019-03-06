@@ -1,7 +1,9 @@
 Architecture:
 Services:----------------
+RegistryService
+	- it will be used to maintain service repository. It provides API to discover (find location) the service.
 GatewayService 
-	- It will expose to outside world and will receive all requests. It will find endpoint from "Service Registry" to forward request to other internal services. It also generates unique request id before calling other service. All services will use this request id to log all the details.
+	- It will expose to outside world and will receive all requests. It will discover service from "RegistryService" to forward request to other internal services. It also generates unique request id before calling other service. All services will use this request id to log all the details.
 AuthService 
 	- It will serve APIs for Authentication. It has only "getToken" API for now but there can be more APIs related to authentication. 
 MemberService 
@@ -25,13 +27,6 @@ OrderService
 		POST /orders -- add an order
 		PUT /orders/{id} -- updates an order
 		DELETE /orders/{id} -- delete an order
-ConfigService 
-	- It is not yet coded. It will provide APIs to update ServiceRegistry. 
-	  E.g. 
-	     addService, updateService, deleteService (All of these service should call "refreshServiceRegistry" to all other microservices so each microservice can get latest information of Services)
-LogService
-    - It is not yet coded. It can be used to writ log through service. All other services can call this service to write log. It can give centralized log. It can impact performance as this service will be hit number of times. 
-
 	
 Key Points:-----------	
 Security: 
@@ -42,8 +37,6 @@ Logging:
 		#1: Each service writes its own Log and then other system/tool can consolidate these logs to central place. 
 		#2: There can be central LogService and all requests calls API from this service to write log. 
 	GatewayService generates unique requestId for each request and then pass same requestId to other services. All services will write log along with this requetsId.
-ServiceRepository/Registry: 
-	ConfigService can be used to manage service repository. It is important to update service repository to all services. E.g. GatewaySevice needs to know endpoint of each service. It can be handled through database but it will impact the performance. It can be handled through "config file" in each service but again this should be refreshed whenever endpoint is changed or new service is added. 
 Scalability:
 	All these services can be deployed with LoadBalancer. 
 	    End User -> GatewayService Load Balancer -> GatewayService Multiple Servers -> XXXService LoadBalancer -> XXXService Multiple Servers
@@ -59,12 +52,11 @@ MongoDB Collections:---------------
 members - _id, name
 products - _id, name, category
 orders - _id, productId, memberId, qty, rate
+registries - id, name, endpoint
 
 Http Status Code:----
 200 - Success
 4XX - Client Error
 5XX - Server Error
-
-
 
 

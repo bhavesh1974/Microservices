@@ -25,9 +25,9 @@ module.exports = class RegistryController extends BaseController {
   }
 
   buildAddModel(req) {
-    return new Model(null, req.body.name);
+    return new Model(null, req.body.name, req.body.endpoint);
   }
   buildUpdateModel(req) {
-    return new Model(req.params.id, req.body.name);
+    return new Model(req.params.id, req.body.name, req.body.endpoint);
   }
 };
