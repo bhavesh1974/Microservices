@@ -52,11 +52,18 @@ MongoDB Collections:---------------
 members - _id, name
 products - _id, name, category
 orders - _id, productId, memberId, qty, rate
-registries - id, name, endpoint
+serviceregistries - id, name, endpoint
 
 Http Status Code:----
 200 - Success
 4XX - Client Error
 5XX - Server Error
+
+
+Installation/Deployment:
+Download the code. 
+Run "npm install" to each sub folder of the "Microservices" folder. 
+Go to each sub folder and run "node app" to start all the services. 
+Go to "RegistryService" folder and run "npm test unitest\addRegistry.js" - it will add service repositories to the database
 
 
