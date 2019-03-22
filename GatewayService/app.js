@@ -11,7 +11,6 @@ const _uuid = require("uuid");
 const dotenv = require("dotenv");
 dotenv.config();
 const config = require("./config/config");
-const serviceRegistry = require("./config/serviceregistry");
 
 const util = require("./shared/services/util");
 const request = require("./shared/services/request");

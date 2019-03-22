@@ -10,7 +10,6 @@ const moment = require("moment");
 const dotenv = require("dotenv");
 dotenv.config();
 const config = require("./config/config");
-const serviceRegistry = require("./config/serviceregistry");
 const authController = require("./controller/authController");
 
 logger = require("./shared/services/logger");
