@@ -98,5 +98,6 @@ mongoose
     });
   })
   .catch(error => {
+    console.log('test')
     console.log(error);
   });
